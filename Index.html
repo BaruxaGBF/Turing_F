@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máquina de Turing</title>
+    <script src="Funciones.js"></script>
+    <script src="https://unpkg.com/gojs/release/go.js"></script>
+</head>
+
+<body>
+    <header class="header">
+        <a href="index.html"><img src="imagenes/logo-maquina-de-turing.png" title="Expresiones Regulares"></a>
+    </header>
+
+   <div class="container">
+        <div class="input">
+            <div class="vv">
+                <label id="label-cadena"><strong>Cadena</strong></label>
+                <input type="text" id="Palabra" name="Palabra">
+                <button id="c"onclick="reiniciar()">Cargar Palabra</button>       
+            </div>
+        </div>
+        <div id="Grafo" style="border: solid 4px burlywood; width:500px; height:250px"></div> 
+        <div class="botones">
+            <button id="p" onclick="PasoAPaso()" class="botoncolor">Paso a Paso</button>
+            <button id="d"onclick="reiniciar()" class="botoncolor">Reiniciar</button> 
+            <button id="r" onclick="resolver()" >Resolver</button>
+            <label id="label-velocidad" class="select-fixed">Velocidad</label>
+            <select name="selector" class="select-fixed" id="sel" onchange="Cambiar_T()" >
+                <option value="1" >Lento</option>
+                <option value="2">Medio</option>
+                <option value="3" selected>Rápido</option>
+            </select>
+        </div>
+         
+        <p id="error" class="tipoaux"></p>   
+   </div>
+
+   <div class="container2">
+    <div class="sele-velo">  
+    </div>
+    <div id="contenedor"></div>
+   </div>
+
+    <script>
+        function Cambiar_T(){
+            switch(document.getElementById("selector").value){
+                case "1":{
+                    t=4000;
+                    break;
+                }
+                case "2":{
+                    t=3000;
+                    break;
+                }
+                case "3":{
+                    t=1000;
+                    break;
+                }
+            }
+        }
+        
+    </script>
+
+   <script>     
+        var $ = go.GraphObject.make;
+        var diagrama = $(go.Diagram, "Grafo", 
+              {
+                allowHorizontalScroll: false,
+                allowVerticalScroll: false,
+                "animationManager.isEnabled": true, 
+                "undoManager.isEnabled":true,
+                isReadOnly : false ,
+                isModelReadOnly : true ,
+                allowDelete : false ,
+                allowInsert : false ,
+                allowLink : false ,
+                allowMove : true ,
+                allowTextEdit : false ,
+                "contextMenuTool.isEnabled" : true,
+              });
+        diagrama.nodeTemplate =
+            $(go.Node, "Auto",new go.Binding("position", "pos", go.Point.parse), 
+            $(go.Shape, "Circle",
+            new go.Binding("fill", "color"),
+            new go.Binding("stroke", "color2"),
+            new go.Binding("strokeWidth","grosor")),
+            $(go.TextBlock,
+            { margin: 15 },
+            new go.Binding("text", "text"))
+            );
+        diagrama.linkTemplate =
+            $(go.Link,
+            $(go.Shape,
+            new go.Binding("stroke", "color"),new go.Binding("strokeWidth","grosor")),
+            $(go.Shape, { toArrow: "Standard" },
+            new go.Binding("fill", "color"),
+            new go.Binding("stroke", "color"),new go.Binding("strokeWidth","grosor")),
+            $(go.TextBlock, "left", { segmentOffset: new go.Point(0, -10) },
+            new go.Binding("text", "text"))
+            );
+       var Estados = [
+           {key:1, text:"q0",color:"white",grosor:2.0,pos:"250 25"},
+           {key:2, text:"q1",color:"white",grosor:2.0,pos:"400 25"},
+       ]
+        Transiciones= [
+           {from: 1, to: 1, text: "(a,a,R)",color:"black",width: 0,height:0},
+           {from: 1, to: 1, text: "(b,a,R)",color:"black"},
+           {from: 1, to: 2, text: "(#,#,L)",color:"black"},
+           {from: 2, to: 2, text: "(a,a,L)",color:"black"},
+           {from: 2, to: 2, text: "(#,#,R)",color:"black"},
+       ]     
+       diagrama.model = new go.GraphLinksModel(Estados,Transiciones);
+   </script>
+   
+</body>
+</html>
